@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>やらまいか — Yaramaika</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f3ece0; --paper: #fbf7ef; --ink: #2d2620; --muted: #7a6d60; --line: #e2d6c4;
+  --accent: #b5465f; --accent-soft: #f6dfe4; --hl: #fde9b8; --shadow: 0 10px 30px rgba(60, 40, 20, .15);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1b1714; --paper: #26211c; --ink: #efe6da; --muted: #a89a8a; --line: #3d342c;
+    --accent: #f08aa3; --accent-soft: #4a2a33; --hl: #5b4a22; --shadow: 0 10px 30px rgba(0, 0, 0, .5);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1b1714; --paper: #26211c; --ink: #efe6da; --muted: #a89a8a; --line: #3d342c;
+  --accent: #f08aa3; --accent-soft: #4a2a33; --hl: #5b4a22; --shadow: 0 10px 30px rgba(0, 0, 0, .5);
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Noto Sans JP", system-ui, sans-serif; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 48px; }
+header { text-align: center; margin: 8px 0 18px; }
+header h1 { font-family: "Noto Serif JP", serif; font-weight: 600; font-size: 34px; margin: 0; letter-spacing: .08em; }
+header .sub { font-family: "Noto Serif JP", serif; font-size: 18px; margin-top: 2px; }
+header .en { color: var(--muted); font-size: 14px; margin-top: 6px; }
+header .note { color: var(--muted); font-size: 12px; margin: 6px auto 0; max-width: 640px; }
+.book { background: var(--paper); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; }
+.picture { position: relative; aspect-ratio: 1344 / 768; background: #000; }
+.picture img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity .6s; }
+.start { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(0, 0, 0, .35); cursor: pointer;
+  border: 0; color: #fff; font: 600 20px "Noto Sans JP", sans-serif; }
+.start span { background: rgba(181, 70, 95, .92); padding: 14px 26px; border-radius: 999px; }
+.story { padding: 26px 34px 24px; font-family: "Noto Serif JP", serif; font-size: 20px; line-height: 2.1; }
+.story p { margin: 0 0 14px; }
+.para { text-indent: 1em; }
+.line { padding-left: 1em; }
+.who { display: block; font-family: "Noto Sans JP", sans-serif; font-size: 12px; color: var(--accent); line-height: 1.4;
+  margin-top: 6px; }
+.s { cursor: pointer; border-radius: 4px; transition: background .25s; }
+.s:hover { background: var(--accent-soft); }
+.s.now { background: var(--hl); }
+.en { font-family: "Noto Sans JP", sans-serif; font-size: 14px; line-height: 1.6; color: var(--muted); margin: -8px 0 16px 1em;
+  font-style: italic; }
+body:not(.show-en) .en { display: none; }
+body:not(.furigana) rt { visibility: hidden; }
+rt { font-size: 10px; color: var(--muted); }
+.word { border-bottom: 1.5px dotted var(--accent); }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between;
+  padding: 12px 18px; border-top: 1px solid var(--line); }
+.controls .group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+button.btn { font: 500 14px "Noto Sans JP", sans-serif; color: var(--ink); background: transparent; border: 1px solid var(--line);
+  border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+button.btn:hover { border-color: var(--accent); }
+button.btn.on { background: var(--accent-soft); border-color: var(--accent); }
+button.btn:disabled { opacity: .35; cursor: default; }
+.count { font-size: 13px; color: var(--muted); min-width: 52px; text-align: center; }
+.pop { position: fixed; z-index: 5; background: var(--paper); color: var(--ink); border: 1px solid var(--line);
+  box-shadow: var(--shadow); border-radius: 10px; padding: 10px 14px; max-width: 300px; font-size: 14px; line-height: 1.5; }
+.pop b { font-family: "Noto Serif JP", serif; font-size: 18px; }
+.glossary { margin-top: 26px; }
+.glossary h2 { font-family: "Noto Serif JP", serif; font-weight: 600; font-size: 18px; }
+.glossary dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; margin: 0; }
+.glossary dt { font-family: "Noto Serif JP", serif; font-size: 18px; }
+.glossary dt small { color: var(--muted); font-size: 12px; margin-left: 6px; }
+.glossary dd { margin: 0; color: var(--muted); font-size: 14px; align-self: center; }
+@media (max-width: 640px) {
+  .story { padding: 18px 16px; font-size: 17px; }
+  header h1 { font-size: 26px; }
+  .glossary dl { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body class="furigana">
+<div class="wrap">
+  <header>
+    <h1 id="title"></h1>
+    <div class="sub" id="subtitle"></div>
+    <div class="en" id="title-en"></div>
+    <div class="note" id="note"></div>
+  </header>
+  <div class="book">
+    <div class="picture">
+      <img id="pic" alt="">
+      <button class="start" id="start"><span>▶ 読み聞かせを始める</span></button>
+    </div>
+    <div class="story" id="story"></div>
+    <div class="controls">
+      <div class="group">
+        <button class="btn" id="prev" title="Previous page (←)">◀</button>
+        <span class="count" id="count"></span>
+        <button class="btn" id="next" title="Next page (→)">▶</button>
+        <button class="btn" id="play" title="Play / pause (space)">⏸ 一時停止</button>
+      </div>
+      <div class="group">
+        <button class="btn on" id="t-furi">ふりがな</button>
+        <button class="btn" id="t-en">English</button>
+        <button class="btn on" id="t-sound">🔊 音</button>
+      </div>
+    </div>
+  </div>
+  <section class="glossary" id="glossary"></section>
+</div>
+<script>
+const BOOK = {"title": "やらまいか", "subtitle": "本田宗一郎、はじまりの秋", "title_en": "Yaramaika", "subtitle_en": "Soichiro Honda's first autumn", "note_en": "Historical fiction. The setting and events follow Honda's own history and Japanese sources; most dialogue and the two young workers are imagined.", "title_ruby": [["やらまいか", null, null]], "subtitle_ruby": [["本田", "ほんだ", null], ["宗一郎", "そういちろう", null], ["、はじまりの", null, null], ["秋", "あき", null]], "speakers": {"honda": "本田宗一郎", "sachi": "さち", "masao": "正夫", "isamu": "勇"}, "words": [{"word": "闇市", "reading": "やみいち", "en": "black market (the open-air markets of postwar Japan)"}, {"word": "焼け跡", "reading": "やけあと", "en": "burned-out ruins"}, {"word": "空襲", "reading": "くうしゅう", "en": "air raid"}, {"word": "屋台", "reading": "やたい", "en": "food stall"}, {"word": "すいとん", "reading": "すいとん", "en": "suiton: flour dumplings in broth, a staple of wartime and postwar shortages"}, {"word": "尺八", "reading": "しゃくはち", "en": "shakuhachi, the Japanese bamboo flute"}, {"word": "終戦", "reading": "しゅうせん", "en": "the end of the war (August 1945)"}, {"word": "焼け野原", "reading": "やけのはら", "en": "a burned-out open field"}, {"word": "旋盤", "reading": "せんばん", "en": "lathe"}, {"word": "工員", "reading": "こういん", "en": "factory worker"}, {"word": "松根油", "reading": "しょうこんゆ", "en": "pine-root oil, a wartime substitute fuel"}, {"word": "やらまいか", "reading": "やらまいか", "en": "Enshu (Hamamatsu) dialect: \"Let's give it a go!\""}, {"word": "試作車", "reading": "しさくしゃ", "en": "prototype vehicle"}, {"word": "湯たんぽ", "reading": "ゆたんぽ", "en": "hot-water bottle (here, the fuel tank)"}, {"word": "もんぺ", "reading": "もんぺ", "en": "monpe: baggy work trousers women wore in wartime"}, {"word": "うわさ", "reading": "うわさ", "en": "rumour, word of mouth"}, {"word": "設計", "reading": "せっけい", "en": "design (engineering)"}], "pages": [{"picture": "img/1d586e0343c9.jpg", "ambience": [{"src": "sfx/4ec51990f214.flac", "gain": -17}, {"src": "sfx/72d873055147.flac", "gain": -13}, {"src": "sfx/5ea68896eefe.flac", "gain": -15}], "blocks": [{"type": "para", "speaker": "storyteller_calm", "en": "It was early autumn in 1946. A year had passed since the war ended. Hamamatsu had burned in the air raids, and in the ruins around the station a black market of tin-roofed stalls had sprung up. Every day people gathered here to find rice and sweet potatoes.", "sentences": [{"ruby": [["昭和", "しょうわ", null], ["二十", "にじゅう", null], ["一", "いち", null], ["年", "ねん", null], ["、", null, null], ["秋", "あき", null], ["のはじめ。", null, null]], "audio": "audio/775e40f712d7.wav"}, {"ruby": [["戦争", "せんそう", null], ["が", null, null], ["終", "お", null], ["わって、", null, null], ["一", "いち", null], ["年", "ねん", null], ["がたっていた。", null, null]], "audio": "audio/48c71f28b35c.wav"}, {"ruby": [["浜松", "はままつ", null], ["の", null, null], ["町", "まち", null], ["は", null, null], ["空襲", "くうしゅう", 2], ["で", null, null], ["焼", "や", null], ["け、", null, null], ["駅", "えき", null], ["のまわりの", null, null], ["焼け跡", "やけあと", 1], ["には、トタン", null, null], ["屋根", "やね", null], ["の", null, null], ["店", "みせ", null], ["がならぶ「", null, null], ["闇市", "やみいち", 0], ["」ができていた。", null, null]], "audio": "audio/61e8287f9a1b.wav"}, {"ruby": [["人々", "ひとびと", null], ["は、", null, null], ["米", "こめ", null], ["やさつまいもを", null, null], ["手", "て", null], ["に", null, null], ["入", "い", null], ["れるために、", null, null], ["毎日", "まいにち", null], ["ここに", null, null], ["集", "あつ", null], ["まってくる。", null, null]], "audio": "audio/76e2d9d91c51.wav"}], "sfx": []}, {"type": "para", "speaker": "storyteller_calm", "en": "In the corner of a stall, a man was slurping suiton. Soichiro Honda, thirty-nine. During the war he had run a company making piston rings, but after the war he sold it, and he had spent this past year playing the shakuhachi and making his own sake. Yet his eyes followed the bicycles passing by: people pedalling under heavy loads, dripping with sweat.", "sentences": [{"ruby": [["屋台", "やたい", 3], ["のすみで、ひとりの", null, null], ["男", "おとこ", null], ["が", null, null], ["すいとん", "すいとん", 4], ["をすすっていた。", null, null]], "audio": "audio/dff47d131e35.wav"}, {"ruby": [["本田", "ほんだ", null], ["宗一郎", "そういちろう", null], ["、", null, null], ["三十", "さんじゅう", null], ["九", "きゅう", null], ["歳", "さい", null], ["。", null, null]], "audio": "audio/e3959791d7b1.wav"}, {"ruby": [["戦争", "せんそう", null], ["中", "ちゅう", null], ["はピストンリングを", null, null], ["作", "つく", null], ["る", null, null], ["会社", "かいしゃ", null], ["の", null, null], ["社長", "しゃちょう", null], ["だったが、", null, null], ["終戦", "しゅうせん", 6], ["のあと", null, null], ["会社", "かいしゃ", null], ["を", null, null], ["売", "う", null], ["り、この", null, null], ["一", "いち", null], ["年", "ねん", null], ["は", null, null], ["尺八", "しゃくはち", 5], ["を", null, null], ["吹", "ふ", null], ["いたり、", null, null], ["酒", "さけ", null], ["を", null, null], ["作", "つく", null], ["ったりして", null, null], ["過", "す", null], ["ごしていた。", null, null]], "audio": "audio/1a08215effdd.wav"}, {"ruby": [["けれども、その", null, null], ["目", "め", null], ["は、", null, null], ["通", "とお", null], ["りを", null, null], ["行", "い", null], ["く", null, null], ["自転", "じてん", null], ["車", "しゃ", null], ["を", null, null], ["追", "お", null], ["っていた。", null, null]], "audio": "audio/aa8136f18195.wav"}, {"ruby": [["重", "おも", null], ["い", null, null], ["荷物", "にもつ", null], ["をつんで、", null, null], ["汗", "あせ", null], ["をかきながらペダルをこぐ", null, null], ["人", "ひと", null], ["たちを。", null, null]], "audio": "audio/b5accfb0d763.wav"}], "sfx": [{"src": "sfx/17e23cb53023.mp3", "sentence": 3, "delay": 0.3, "gain": -10}, {"src": "sfx/91f9f46b829e.mp3", "sentence": 3, "delay": 2.2, "gain": -8}]}, {"type": "line", "speaker": "honda", "en": "Everyone's having such a hard time... If only those bicycles had a little engine...", "sentences": [{"ruby": [["みんな、", null, null], ["大変", "たいへん", null], ["だなあ……。", null, null]], "audio": "audio/d62c7befdb29.wav"}, {"ruby": [["あの", null, null], ["自転", "じてん", null], ["車", "しゃ", null], ["に、", null, null], ["小", "ちい", null], ["さなエンジンがついていたら……。", null, null]], "audio": "audio/90a1d555bd94.wav"}], "sfx": []}, {"type": "line", "speaker": "honda", "en": "That's it. The engine I saw at Inukai's house today...!", "sentences": [{"ruby": [["そうだ。", null, null]], "audio": "audio/7b7fe7c650e6.wav"}, {"ruby": [["今日", "きょう", null], ["、", null, null], ["犬飼", "いぬかい", null], ["さんの", null, null], ["家", "いえ", null], ["で", null, null], ["見", "み", null], ["た、あのエンジン……！", null, null]], "audio": "audio/b19d202972dd.wav"}], "sfx": []}]}, {"picture": "img/801d41957da1.jpg", "ambience": [{"src": "sfx/60600ca6a24e.flac", "gain": -13}, {"src": "sfx/06bc23023d90.flac", "gain": -17}], "blocks": [{"type": "para", "speaker": "storyteller", "en": "A few weeks later. Pampas grass swayed in the wind over the burned-out field, and among it a small barrack went up. At the door hung a signboard: Honda Technical Research Institute. Inside stood one old belt-driven lathe, and outside about ten machines in a row. Soichiro spread a drawing on the workbench and called his young workers over.", "sentences": [{"ruby": [["数", "すう", null], ["週間", "しゅうかん", null], ["後", "ご", null], ["。", null, null]], "audio": "audio/aa8ac0149d21.wav"}, {"ruby": [["焼け野原", "やけのはら", 7], ["に、すすきが", null, null], ["風", "ふう", null], ["にゆれている。", null, null]], "audio": "audio/6eaee0990f30.wav"}, {"ruby": [["その", null, null], ["中", "なか", null], ["に、", null, null], ["小", "ちい", null], ["さなバラックが", null, null], ["建", "た", null], ["った。", null, null]], "audio": "audio/47db0e6bdfa5.wav"}, {"ruby": [["入り口", "いりぐち", null], ["には「", null, null], ["本田", "ほんだ", null], ["技術", "ぎじゅつ", null], ["研究", "けんきゅう", null], ["所", "しょ", null], ["」の", null, null], ["看板", "かんばん", null], ["。", null, null]], "audio": "audio/61aea6b5702f.wav"}, {"ruby": [["中", "ちゅう", null], ["には", null, null], ["古", "ふる", null], ["いベルト", null, null], ["式", "しき", null], ["の", null, null], ["旋盤", "せんばん", 8], ["が", null, null], ["一台", "いちだい", null], ["、", null, null], ["外", "そと", null], ["には", null, null], ["機械", "きかい", null], ["が", null, null], ["十台", "じゅうだい", null], ["ほどならんでいる。", null, null]], "audio": "audio/8fb9d722c10a.wav"}, {"ruby": [["宗一郎", "そういちろう", null], ["は", null, null], ["作業", "さぎょう", null], ["台", "だい", null], ["に", null, null], ["図面", "ずめん", null], ["を", null, null], ["広", "ひろ", null], ["げ、", null, null], ["若", "わか", null], ["い", null, null], ["工員", "こういん", 9], ["たちを", null, null], ["呼", "よ", null], ["んだ。", null, null]], "audio": "audio/8fdf71479d2f.wav"}], "sfx": [{"src": "sfx/22b895ffedb1.mp3", "sentence": 5, "delay": 1.6, "gain": -6}]}, {"type": "line", "speaker": "honda", "en": "This is an engine the army used to power its radios. There's no more war. So we're going to give this fellow a new job.", "sentences": [{"ruby": [["これは、", null, null], ["陸軍", "りくぐん", null], ["が", null, null], ["無線", "むせん", null], ["機", "き", null], ["の", null, null], ["発電", "はつでん", null], ["に", null, null], ["使", "つか", null], ["っていたエンジンだ。", null, null]], "audio": "audio/21814db167c3.wav"}, {"ruby": [["もう", null, null], ["戦争", "せんそう", null], ["はない。", null, null]], "audio": "audio/6a274fe842ef.wav"}, {"ruby": [["だから、こいつに", null, null], ["新", "あたら", null], ["しい", null, null], ["仕事", "しごと", null], ["をやるんだ。", null, null]], "audio": "audio/96bf511553d6.wav"}], "sfx": [{"src": "sfx/d68d4faeb5d5.mp3", "sentence": 0, "delay": 0, "gain": -12}]}, {"type": "line", "speaker": "masao", "en": "A new job... on a bicycle?", "sentences": [{"ruby": [["新", "あたら", null], ["しい", null, null], ["仕事", "しごと", null], ["……", null, null], ["自転", "じてん", null], ["車", "しゃ", null], ["に、ですか？", null, null]], "audio": "audio/3497a0677e07.wav"}], "sfx": []}, {"type": "line", "speaker": "honda", "en": "That's right. It'll be far easier than walking.", "sentences": [{"ruby": [["そうだ。", null, null]], "audio": "audio/7b7fe7c650e6.wav"}, {"ruby": [["歩", "ある", null], ["くより、ずっと", null, null], ["楽", "らく", null], ["になるぞ。", null, null]], "audio": "audio/14397d212110.wav"}], "sfx": []}, {"type": "line", "speaker": "isamu", "en": "But boss, there's no gasoline anywhere.", "sentences": [{"ruby": [["でも", null, null], ["社長", "しゃちょう", null], ["、ガソリンなんて、どこにもありませんよ。", null, null]], "audio": "audio/9ad53356d013.wav"}], "sfx": []}, {"type": "line", "speaker": "honda", "en": "There's oil from pine roots. Pine-root oil. ...Yaramaika!", "sentences": [{"ruby": [["松", "まつ", null], ["の", null, null], ["根", "ね", null], ["から", null, null], ["取", "と", null], ["った", null, null], ["油", "あぶら", null], ["がある。", null, null]], "audio": "audio/1c255149c7c4.wav"}, {"ruby": [["松根油", "しょうこんゆ", 10], ["だ……", null, null], ["やらまいか", "やらまいか", 11], ["！", null, null]], "audio": "audio/3298a023d994.wav"}], "sfx": []}, {"type": "para", "speaker": "storyteller", "en": "\"Yaramaika\" is the dialect of Enshu, the Hamamatsu area, and means \"Let's give it a try!\" Soichiro bought up every one of these engines left at the factories in Odawara and Kamata: about five hundred.", "sentences": [{"ruby": [["「", null, null], ["やらまいか", "やらまいか", 11], ["」は", null, null], ["遠州", "えんしゅう", null], ["、つまり", null, null], ["浜松", "はままつ", null], ["あたりの", null, null], ["言葉", "ことば", null], ["で、「やってみようじゃないか」という", null, null], ["意味", "いみ", null], ["だ。", null, null]], "audio": "audio/b0d50658a807.wav"}, {"ruby": [["宗一郎", "そういちろう", null], ["は、", null, null], ["小田原", "おだわら", null], ["と", null, null], ["蒲田", "かまた", null], ["の", null, null], ["工場", "こうじょう", null], ["に", null, null], ["残", "のこ", null], ["っていたこのエンジンを、すべて", null, null], ["買い集", "かいあつ", null], ["めた。", null, null]], "audio": "audio/f55f4ddbd985.wav"}, {"ruby": [["その", null, null], ["数", "すう", null], ["、およそ", null, null], ["五百台", "ごひゃくだい", null], ["。", null, null]], "audio": "audio/3adb70595a9f.wav"}], "sfx": []}]}, {"picture": "img/d81595180238.jpg", "ambience": [{"src": "sfx/1c5f8f432537.flac", "gain": -14}, {"src": "sfx/ad0d885b0da1.flac", "gain": -23}], "blocks": [{"type": "para", "speaker": "storyteller", "en": "The first prototype was finished. Its fuel tank was, of all things, a hot-water bottle from the house.", "sentences": [{"ruby": [["最初", "さいしょ", null], ["の", null, null], ["試作車", "しさくしゃ", 12], ["ができた。", null, null]], "audio": "audio/0d65e495a61b.wav"}, {"ruby": [["燃料", "ねんりょう", null], ["タンクは、なんと", null, null], ["家", "いえ", null], ["にあった", null, null], ["湯たんぽ", "ゆたんぽ", 13], ["だ。", null, null]], "audio": "audio/a8e08ba9ef94.wav"}], "sfx": []}, {"type": "line", "speaker": "honda", "en": "One's ready. Sachi, give it a ride.", "sentences": [{"ruby": [["一台", "いちだい", null], ["できたぞ。", null, null]], "audio": "audio/bff88e7b3133.wav"}, {"ruby": [["さち、", null, null], ["乗", "の", null], ["ってみてくれ。", null, null]], "audio": "audio/3d7e3eb2f75e.wav"}], "sfx": []}, {"type": "line", "speaker": "sachi", "en": "Me? ...All right, all right.", "sentences": [{"ruby": [["わたしが？……", null, null]], "audio": "audio/a9518ea15466.wav"}, {"ruby": [["はいはい、わかりました。", null, null]], "audio": "audio/a3e2da42c1dc.wav"}], "sfx": []}, {"type": "para", "speaker": "storyteller", "en": "Pine-root oil was hard to ignite, and Sachi pedalled for a long time. Then: bata-bata-bata! With a loud noise the engine came to life. Sachi rode along the crowded main street, all the way to Hamamatsu Station and back.", "sentences": [{"ruby": [["松根油", "しょうこんゆ", 10], ["は", null, null], ["火", "ひ", null], ["がつきにくく、さちは", null, null], ["長", "なが", null], ["いあいだペダルをこいだ。", null, null]], "audio": "audio/e25aa55b9378.wav"}, {"ruby": [["やがて、バタバタバタッ！", null, null]], "audio": "audio/32a42cfa3adb.wav"}, {"ruby": [["大", "おお", null], ["きな", null, null], ["音", "おと", null], ["をたてて、エンジンが", null, null], ["動", "うご", null], ["きだした。", null, null]], "audio": "audio/c0d56ea68dd5.wav"}, {"ruby": [["さちは", null, null], ["人", "ひと", null], ["でいっぱいの", null, null], ["大通", "おおどお", null], ["りを", null, null], ["走", "はし", null], ["り、", null, null], ["浜松", "はままつ", null], ["駅", "えき", null], ["まで", null, null], ["行", "い", null], ["って", null, null], ["帰", "かえ", null], ["ってきた。", null, null]], "audio": "audio/fb1ab95aaad1.wav"}], "sfx": [{"src": "sfx/17e23cb53023.mp3", "sentence": 0, "delay": 0.8, "gain": -10}, {"src": "sfx/16b691f40d7f.mp3", "sentence": 1, "delay": 0.2, "gain": -9}, {"src": "sfx/e2943c87ee94.mp3", "sentence": 3, "delay": 0.5, "gain": -16}]}, {"type": "line", "speaker": "sachi", "en": "Dear, this won't do. Look, my monpe are covered in oil. Your customers will scold you.", "sentences": [{"ruby": [["あなた、これじゃだめですよ。", null, null]], "audio": "audio/a46685600338.wav"}, {"ruby": [["見", "み", null], ["てください、", null, null], ["もんぺ", "もんぺ", 14], ["が", null, null], ["油", "あぶら", null], ["だらけ。", null, null]], "audio": "audio/488b0e6dc146.wav"}, {"ruby": [["これじゃ、お", null, null], ["客", "きゃく", null], ["さんに", null, null], ["叱", "しか", null], ["られますよ。", null, null]], "audio": "audio/13c3c92e503e.wav"}], "sfx": []}, {"type": "line", "speaker": "honda", "en": "Hmm... maybe so.", "sentences": [{"ruby": [["うーん……そうかもしれんな。", null, null]], "audio": "audio/f8e42dbc5bf4.wav"}], "sfx": []}, {"type": "para", "speaker": "storyteller", "en": "Because of that noisy sound, people in town began calling the bicycle the \"Bata-Bata\".", "sentences": [{"ruby": [["そのにぎやかな", null, null], ["音", "おと", null], ["から、", null, null], ["町", "まち", null], ["の", null, null], ["人", "ひと", null], ["たちはこの", null, null], ["自転", "じてん", null], ["車", "しゃ", null], ["を「バタバタ」と", null, null], ["呼", "よ", null], ["ぶようになった。", null, null]], "audio": "audio/daa888eabf96.wav"}], "sfx": []}]}, {"picture": "img/370c43223dba.jpg", "ambience": [{"src": "sfx/288c7fc4775e.flac", "gain": -17}], "blocks": [{"type": "para", "speaker": "storyteller_calm", "en": "Word spread in no time. From Tokyo, Nagoya and Osaka, people with rucksacks came to Hamamatsu. They paid in advance, packed two engines each into their rucksacks, and went home on crowded trains.", "sentences": [{"ruby": [["うわさ", "うわさ", 15], ["は、あっという", null, null], ["間", "ま", null], ["に", null, null], ["広", "ひろ", null], ["がった。", null, null]], "audio": "audio/977960f3e970.wav"}, {"ruby": [["東京", "とうきょう", null], ["や", null, null], ["名古屋", "なごや", null], ["、", null, null], ["大阪", "おおさか", null], ["から、リュックサックを", null, null], ["背負", "せお", null], ["った", null, null], ["人", "ひと", null], ["たちが", null, null], ["浜松", "はままつ", null], ["までやって", null, null], ["来", "く", null], ["る。", null, null]], "audio": "audio/de4f885e432e.wav"}, {"ruby": [["先", "さき", null], ["にお", null, null], ["金", "かね", null], ["を", null, null], ["払", "はら", null], ["い、エンジンを", null, null], ["二台", "にだい", null], ["ずつリュックにつめて、こんだ", null, null], ["汽車", "きしゃ", null], ["で", null, null], ["帰", "かえ", null], ["っていくのだ。", null, null]], "audio": "audio/bab25be2670a.wav"}], "sfx": [{"src": "sfx/3b33e8241c5a.mp3", "sentence": 2, "delay": 3.0, "gain": -14}]}, {"type": "para", "speaker": "storyteller_calm", "en": "One winter night, in the shack after work, Soichiro gazed at the dwindling engines.", "sentences": [{"ruby": [["ある", null, null], ["冬", "ふゆ", null], ["の", null, null], ["夜", "よる", null], ["、", null, null], ["仕事", "しごと", null], ["を", null, null], ["終", "お", null], ["えた", null, null], ["小屋", "ごや", null], ["で、", null, null], ["宗一郎", "そういちろう", null], ["は", null, null], ["残", "のこ", null], ["り", null, null], ["少", "すく", null], ["なくなったエンジンを", null, null], ["見", "み", null], ["つめていた。", null, null]], "audio": "audio/d40f96d55d75.wav"}], "sfx": [{"src": "sfx/968c00778280.mp3", "sentence": 0, "delay": 0.2, "gain": -12}]}, {"type": "line", "speaker": "masao", "en": "Boss, the army engines are almost gone.", "sentences": [{"ruby": [["社長", "しゃちょう", null], ["、", null, null], ["陸軍", "りくぐん", null], ["のエンジン、もうすぐなくなりますね。", null, null]], "audio": "audio/8f41b47a83e2.wav"}], "sfx": []}, {"type": "line", "speaker": "honda", "en": "Yes. Then we'll make our own. A Honda engine.", "sentences": [{"ruby": [["ああ。", null, null]], "audio": "audio/489d77d916d2.wav"}, {"ruby": [["だったら、", null, null], ["自分", "じぶん", null], ["たちで", null, null], ["作", "つく", null], ["ればいい。", null, null]], "audio": "audio/9b98ce26882c.wav"}, {"ruby": [["本田", "ほんだ", null], ["のエンジンをな。", null, null]], "audio": "audio/4925e3c5186e.wav"}], "sfx": []}, {"type": "para", "speaker": "storyteller_calm", "en": "In 1947 Soichiro completed the A-Type, the first engine he designed himself. And in 1948 Honda Motor Co. was born. The story that began in a small shack in the ruins would one day reach the whole world.", "sentences": [{"ruby": [["一", "いち", null], ["九", "きゅう", null], ["四", "よん", null], ["七", "なな", null], ["年", "ねん", null], ["、", null, null], ["宗一郎", "そういちろう", null], ["は", null, null], ["初", "はじ", null], ["めて", null, null], ["自分", "じぶん", null], ["で", null, null], ["設計", "せっけい", 16], ["したエンジン「A", null, null], ["型", "がた", null], ["」を", null, null], ["完成", "かんせい", null], ["させる。", null, null]], "audio": "audio/259540fd64f8.wav"}, {"ruby": [["そして", null, null], ["一", "いち", null], ["九", "きゅう", null], ["四", "よん", null], ["八", "はち", null], ["年", "ねん", null], ["、", null, null], ["本田", "ほんだ", null], ["技研", "ぎけん", null], ["工業", "こうぎょう", null], ["が", null, null], ["生", "う", null], ["まれた。", null, null]], "audio": "audio/00e7a848299e.wav"}, {"ruby": [["焼け跡", "やけあと", 1], ["の", null, null], ["小", "ちい", null], ["さな", null, null], ["小屋", "ごや", null], ["から", null, null], ["始", "はじ", null], ["まった", null, null], ["物語", "ものがたり", null], ["は、やがて", null, null], ["世界", "せかい", null], ["へとつながっていく。", null, null]], "audio": "audio/09c2f55ce608.wav"}], "sfx": []}]}]};
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const store = { get(k, d) { try { const v = localStorage.getItem("storybook." + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+                set(k, v) { try { localStorage.setItem("storybook." + k, JSON.stringify(v)); } catch {} } };
+
+function rubyHTML(segs) {
+  return segs.map(([text, reading, w]) => {
+    let h = reading && reading !== text ? `<ruby>${esc(text)}<rt>${esc(reading)}</rt></ruby>` : esc(text);
+    if (w !== null && w !== undefined) h = `<span class="word" data-w="${w}">${h}</span>`;
+    return h;
+  }).join("");
+}
+
+// ---------------------------------------------------------------- header, glossary
+$("title").innerHTML = rubyHTML(BOOK.title_ruby);
+$("subtitle").innerHTML = rubyHTML(BOOK.subtitle_ruby);
+$("title-en").textContent = `${BOOK.title_en}: ${BOOK.subtitle_en}`;
+$("note").textContent = BOOK.note_en;
+if (BOOK.words.length) {
+  $("glossary").innerHTML = "<h2>ことば</h2><dl>" + BOOK.words.map((w) =>
+    `<dt>${esc(w.word)}<small>${w.reading !== w.word ? esc(w.reading) : ""}</small></dt><dd>${esc(w.en)}</dd>`).join("") + "</dl>";
+}
+
+// ---------------------------------------------------------------- toggles
+const prefs = { furigana: store.get("furigana", true), en: store.get("en", false), sound: store.get("sound", true) };
+function applyPrefs() {
+  document.body.classList.toggle("furigana", prefs.furigana);
+  document.body.classList.toggle("show-en", prefs.en);
+  $("t-furi").classList.toggle("on", prefs.furigana);
+  $("t-en").classList.toggle("on", prefs.en);
+  $("t-sound").classList.toggle("on", prefs.sound);
+  $("t-sound").textContent = prefs.sound ? "🔊 音" : "🔇 音";
+  if (bedBus) bedBus.gain.setTargetAtTime(prefs.sound ? 1 : 0, ctx.currentTime, 0.2);
+  if (sfxBus) sfxBus.gain.setTargetAtTime(prefs.sound ? 1 : 0, ctx.currentTime, 0.1);
+}
+for (const [id, key] of [["t-furi", "furigana"], ["t-en", "en"], ["t-sound", "sound"]]) {
+  $(id).onclick = () => { prefs[key] = !prefs[key]; store.set(key, prefs[key]); applyPrefs(); };
+}
+
+// ---------------------------------------------------------------- audio
+// three buses: voices (straight out), ambience beds (ducked while someone speaks), effects
+let ctx = null, bedBus = null, duck = null, sfxBus = null, voiceBus = null;
+const buffers = new Map();
+function ensureCtx() {
+  if (ctx) return;
+  ctx = new AudioContext();
+  voiceBus = ctx.createGain(); voiceBus.connect(ctx.destination);
+  duck = ctx.createGain(); duck.connect(ctx.destination);
+  bedBus = ctx.createGain(); bedBus.connect(duck);
+  sfxBus = ctx.createGain(); sfxBus.connect(ctx.destination);
+  applyPrefs();
+}
+function load(url) {
+  if (!buffers.has(url)) {
+    buffers.set(url, fetch(url).then((r) => r.arrayBuffer()).then((b) => ctx.decodeAudioData(b)));
+  }
+  return buffers.get(url);
+}
+const dB = (x) => Math.pow(10, x / 20);
+
+let bed = null;   // {gain, sources} of the page's ambience
+async function startBed(page) {
+  const layers = await Promise.all(page.ambience.map(async (a) => ({ a, buf: await load(a.src) })));
+  const gain = ctx.createGain();
+  gain.gain.value = 0;
+  gain.connect(bedBus);
+  const sources = layers.map(({ a, buf }) => {
+    const src = ctx.createBufferSource(), g = ctx.createGain();
+    src.buffer = buf; src.loop = true; g.gain.value = dB(a.gain);
+    src.connect(g); g.connect(gain);
+    src.start(ctx.currentTime, Math.random() * buf.duration * 0.5);
+    return src;
+  });
+  gain.gain.setTargetAtTime(1, ctx.currentTime, 0.6);
+  bed = { gain, sources };
+}
+function stopBed(fade = 0.5) {
+  if (!bed) return;
+  const b = bed; bed = null;
+  b.gain.gain.setTargetAtTime(0, ctx.currentTime, fade / 3);
+  setTimeout(() => b.sources.forEach((s) => { try { s.stop(); } catch {} }), fade * 1000 + 200);
+}
+function setDuck(on) { duck.gain.setTargetAtTime(on ? 0.45 : 1, ctx.currentTime, on ? 0.08 : 0.35); }
+
+async function playEffect(fx) {
+  const buf = await load(fx.src);
+  const src = ctx.createBufferSource(), g = ctx.createGain();
+  src.buffer = buf; g.gain.value = dB(fx.gain);
+  src.connect(g); g.connect(sfxBus); src.start();
+}
+
+let voiceSrc = null;
+function playVoice(url) {
+  return load(url).then((buf) => new Promise((done) => {
+    const src = ctx.createBufferSource();
+    src.buffer = buf; src.connect(voiceBus);
+    src.onended = () => { if (voiceSrc === src) voiceSrc = null; done(); };
+    voiceSrc = src; setDuck(true); src.start();
+  })).finally(() => setDuck(false));
+}
+function stopVoice() { if (voiceSrc) { const s = voiceSrc; voiceSrc = null; try { s.stop(); } catch {} } }
+
+// ---------------------------------------------------------------- pages
+let index = 0, run = 0, paused = false, started = false;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+function renderPage() {
+  const page = BOOK.pages[index];
+  $("pic").src = page.picture;
+  $("count").textContent = `${index + 1} / ${BOOK.pages.length}`;
+  $("prev").disabled = index === 0;
+  $("next").disabled = index === BOOK.pages.length - 1;
+  let h = "";
+  page.blocks.forEach((b, bi) => {
+    const sents = b.sentences.map((s, si) => `<span class="s" data-b="${bi}" data-s="${si}">${rubyHTML(s.ruby)}</span>`).join("");
+    if (b.type === "line") h += `<p class="line"><span class="who">${esc(BOOK.speakers[b.speaker] || b.speaker)}</span>「${sents}」</p>`;
+    else h += `<p class="para">${sents}</p>`;
+    if (b.en) h += `<p class="en">${esc(b.en)}</p>`;
+  });
+  $("story").innerHTML = h;
+  // preload this page's sounds and voices, and the next picture
+  if (ctx) {
+    page.ambience.forEach((a) => load(a.src));
+    page.blocks.forEach((b) => { b.sentences.forEach((s) => load(s.audio)); b.sfx.forEach((f) => load(f.src)); });
+  }
+  if (BOOK.pages[index + 1]) new Image().src = BOOK.pages[index + 1].picture;
+}
+
+function mark(bi, si) {
+  document.querySelectorAll(".s.now").forEach((e) => e.classList.remove("now"));
+  const el = document.querySelector(`.s[data-b="${bi}"][data-s="${si}"]`);
+  if (el) { el.classList.add("now"); el.scrollIntoView({ block: "nearest", behavior: "smooth" }); }
+}
+
+// the narrator and the characters, in order; effects fire on their sentence (+delay)
+async function readPage(from = [0, 0]) {
+  const me = ++run, page = BOOK.pages[index];
+  if (from[0] === 0 && from[1] === 0) await sleep(1800);   // let the scene's sound settle in first
+  for (let bi = from[0]; bi < page.blocks.length; bi++) {
+    const b = page.blocks[bi];
+    for (let si = bi === from[0] ? from[1] : 0; si < b.sentences.length; si++) {
+      while (paused && me === run) await sleep(150);
+      if (me !== run) return;
+      mark(bi, si);
+      b.sfx.filter((f) => f.sentence === si).forEach((f) => setTimeout(() => me === run && playEffect(f), f.delay * 1000));
+      await playVoice(b.sentences[si].audio);
+      if (me !== run) return;
+      await sleep(si === b.sentences.length - 1 ? 750 : 300);
+    }
+  }
+  mark(-1, -1);
+}
+
+async function openPage(i) {
+  run++; stopVoice();
+  index = i;
+  stopBed(1.2);
+  renderPage();
+  if (started) { paused = false; updatePlay(); await startBed(BOOK.pages[index]); readPage(); }
+}
+
+function updatePlay() { $("play").textContent = paused ? "▶ 再生" : "⏸ 一時停止"; }
+$("play").onclick = () => {
+  if (!started) return $("start").click();
+  paused = !paused; updatePlay();
+  if (paused) { stopVoice(); ctx.suspend(); } else ctx.resume();
+};
+$("start").onclick = async () => {
+  $("start").remove();
+  ensureCtx(); started = true;
+  await openPage(index);
+};
+$("prev").onclick = () => index > 0 && openPage(index - 1);
+$("next").onclick = () => index < BOOK.pages.length - 1 && openPage(index + 1);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") $("next").click();
+  else if (e.key === "ArrowLeft") $("prev").click();
+  else if (e.key === " ") { e.preventDefault(); $("play").click(); }
+});
+
+// tap a sentence: read on from there; tap an underlined word: its meaning
+let pop = null;
+$("story").addEventListener("click", (e) => {
+  const w = e.target.closest(".word");
+  if (pop) { pop.remove(); pop = null; }
+  if (w) {   // a glossary word: show its meaning, don't jump the reading
+    const word = BOOK.words[+w.dataset.w], r = w.getBoundingClientRect();
+    pop = document.createElement("div");
+    pop.className = "pop";
+    pop.innerHTML = `<b>${esc(word.word)}</b> ${word.reading !== word.word ? esc(word.reading) : ""}<br>${esc(word.en)}`;
+    document.body.appendChild(pop);
+    pop.style.left = Math.max(8, Math.min(r.left, innerWidth - pop.offsetWidth - 12)) + "px";
+    pop.style.top = (r.bottom + 6) + "px";
+    return;
+  }
+  const s = e.target.closest(".s");
+  if (!s || !started) return;
+  stopVoice(); paused = false; updatePlay(); if (ctx.state === "suspended") ctx.resume();
+  readPage([+s.dataset.b, +s.dataset.s]);
+});
+document.addEventListener("scroll", () => { if (pop) { pop.remove(); pop = null; } }, { passive: true });
+
+applyPrefs();
+renderPage();
+</script>
+</body>
+</html>
